@@ -1,4 +1,6 @@
-baseURL = "http://localhost:1313/"
+baseURL = "https://hjardon.github.io/hjk-hugo-test/"
+relativeURLs = true
+canonifyURLs = true
 languageCode = "en-us"
 title = "Hildeberto Jardon-Kojakhmetov"
 
