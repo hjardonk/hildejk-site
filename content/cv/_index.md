@@ -2,7 +2,7 @@
 title: "CV"
 ---
 
-[Download full CV (PDF)](/assets/hjk_cv.pdf)
+[Download full CV (PDF)](/cv/hjk_cv.pdf)
 
 
 <div class="cv">
