@@ -1,0 +1,99 @@
+{{/* layouts/partials/publications.html */}}
+
+{{ $pubs := site.Data.publications }}
+
+{{ $journals := slice }}
+{{ $confs := slice }}
+{{ $preprints := slice }}
+{{ $books := slice }}
+{{ $theses := slice }}
+{{ $other := slice }}
+
+{{/* Group by explicit category from JSON */}}
+{{ range $pubs }}
+  {{ $c := lower (or .category "") }}
+
+  {{ if eq $c "journal" }}
+    {{ $journals = $journals | append . }}
+  {{ else if eq $c "conference" }}
+    {{ $confs = $confs | append . }}
+  {{ else if eq $c "preprint" }}
+    {{ $preprints = $preprints | append . }}
+  {{ else if eq $c "book" }}
+    {{ $books = $books | append . }}
+  {{ else if eq $c "thesis" }}
+    {{ $theses = $theses | append . }}
+  {{ else }}
+    {{ $other = $other | append . }}
+  {{ end }}
+{{ end }}
+
+{{/* Rendering template for a list */}}
+{{ define "publist" }}
+  {{ $items := sort . "year" "desc" }}
+  {{ $n := len $items }}
+
+  <ol class="pub-list">
+  {{ range $i, $p := $items }}
+    {{ $num := sub $n $i }}
+    <li value="{{ $num }}">
+      <div class="pub">
+        <div class="pub-title">
+          {{ if $p.url }}<a href="{{ $p.url }}">{{ $p.title }}</a>{{ else }}{{ $p.title }}{{ end }}
+        </div>
+
+        {{ if $p.authors }}
+          <div class="pub-authors">{{ delimit $p.authors ", " }}</div>
+        {{ end }}
+
+        <div class="pub-venue">
+          {{ if $p.journal }}<em>{{ $p.journal }}</em>{{ end }}
+          {{ if and (not $p.journal) $p.booktitle }}<em>{{ $p.booktitle }}</em>{{ end }}
+          {{ if and (not $p.journal) (not $p.booktitle) $p.publisher }}<em>{{ $p.publisher }}</em>{{ end }}
+          {{ if $p.year }} ({{ $p.year }}){{ end }}
+
+          {{ if $p.doi }} · <a href="https://doi.org/{{ $p.doi }}">DOI</a>{{ end }}
+
+          {{ $ap := lower (or $p.archiveprefix "") }}
+          {{ if and $p.eprint (eq $ap "arxiv") }}
+            · <a href="https://arxiv.org/abs/{{ $p.eprint }}">arXiv</a>
+            · <a href="https://arxiv.org/pdf/{{ $p.eprint }}.pdf">PDF</a>
+          {{ end }}
+        </div>
+      </div>
+    </li>
+  {{ end }}
+  </ol>
+{{ end }}
+
+
+{{ if gt (len $journals) 0 }}
+<h2>Journal articles</h2>
+{{ template "publist" $journals }}
+{{ end }}
+
+{{ if gt (len $confs) 0 }}
+<h2>Conference papers</h2>
+{{ template "publist" $confs }}
+{{ end }}
+
+{{ if gt (len $preprints) 0 }}
+<h2>Preprints</h2>
+<div class="pub-note">Preprints are not peer reviewed unless stated otherwise.</div>
+{{ template "publist" $preprints }}
+{{ end }}
+
+{{ if gt (len $books) 0 }}
+<h2>Books and edited volumes</h2>
+{{ template "publist" $books }}
+{{ end }}
+
+{{ if gt (len $theses) 0 }}
+<h2>Theses</h2>
+{{ template "publist" $theses }}
+{{ end }}
+
+{{ if gt (len $other) 0 }}
+<h2>Other</h2>
+{{ template "publist" $other }}
+{{ end }}

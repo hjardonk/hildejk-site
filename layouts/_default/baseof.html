@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ .Title }} | {{ site.Title }}{{ end }}</title>
+  <link rel="stylesheet" href="/css/site.css"/>
+</head>
+<body>
+  <div class="wrap">
+    {{ partial "nav.html" . }}
+
+    <header>
+      {{ if .IsHome }}
+        <h1>{{ site.Title }}</h1>
+        <div class="meta">{{ site.Params.tagline }}</div>
+        <div class="meta">{{ site.Params.affiliation }}</div>
+      {{ else }}
+        <h1>{{ .Title }}</h1>
+      {{ end }}
+    </header>
+
+    {{ block "main" . }}{{ end }}
+
+    <hr/>
+    <div class="footer">© {{ now.Year }} {{ site.Title }}</div>
+  </div>
+</body>
+</html>

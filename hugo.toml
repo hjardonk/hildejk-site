@@ -1,0 +1,15 @@
+baseURL = "http://localhost:1313/"
+languageCode = "en-us"
+title = "Hildeberto Jardon-Kojakhmetov"
+
+[params]
+  tagline = "Dynamical systems, singularity theory, network science"
+  affiliation = "University of Groningen"
+  email = "you@rug.nl"
+  github = ""
+  scholar = ""
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
