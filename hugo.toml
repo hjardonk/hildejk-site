@@ -1,4 +1,4 @@
-baseURL = "https://hildejk.xyz/hjk-hugo-test/"
+baseURL = "https://hjardonk.github.io/hjk-hugo-test/"
 relativeURLs = false
 canonifyURLs = true
 languageCode = "en-us"
