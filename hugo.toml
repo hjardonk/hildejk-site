@@ -5,7 +5,7 @@ languageCode = "en-us"
 title = "Hildeberto Jardón-Kojakhmetov"
 
 [params]
-  tagline = "Dynamical systems, singularity theory, network science"
+  tagline = "Dynamical systems and network science"
   affiliation = "University of Groningen"
   email = "you@rug.nl"
   github = ""
