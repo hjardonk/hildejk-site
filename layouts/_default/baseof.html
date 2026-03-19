@@ -23,7 +23,7 @@
     {{ block "main" . }}{{ end }}
 
     <hr/>
-    <div class="footer">© {{ now.Year }} {{ site.Title }}</div>
+    <div class="footer">© {{ now.Year }} {{ site.Title }} · <a href="mailto:{{ site.Params.email }}">{{ site.Params.email }}</a></div>
   </div>
 </body>
 </html>

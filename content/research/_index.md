@@ -4,11 +4,17 @@ title: "Research"
 
 My work is in dynamical systems and its applications.
 
+<div class="research-card">
+
 ### Slow–fast dynamics and critical transitions
 
 Many natural and engineered systems operate across multiple time scales. I study geometric mechanisms underlying abrupt transitions, delayed loss of stability, and multiscale instabilities, with an emphasis on global phase-space structure.
 
 <span class="note">Keywords: geometric singular perturbation theory, canards, critical transitions, multiscale bifurcations</span>
+
+</div>
+
+<div class="research-card">
 
 ### Bifurcation, singularity theory, and desingularization
 
@@ -16,8 +22,11 @@ I use ideas and techniques from singularity and bifurcation theory to analyze de
 
 A central theme of my work is the systematic desingularization of such points via blow-up and related geometric techniques. This transforms non-generic configurations into higher-dimensional but regular systems where invariant manifolds, stability, and bifurcation mechanisms can be studied with standard tools. This ultimately yields precise information about the original system and its parameter dependence.
 
-
 <span class="note">Keywords: geometric desingularization, blow-up methods, non-hyperbolic singularities, slow–fast systems</span>
+
+</div>
+
+<div class="research-card">
 
 ### Networked dynamical systems
 
@@ -25,6 +34,7 @@ Many realistic models consist of subsystems coupled through a network. I study h
 
 <span class="note">Keywords: adaptive networks, higher-order coupling, multiscale dynamics, network singularities</span>
 
+</div>
 
 ## Current directions
 
