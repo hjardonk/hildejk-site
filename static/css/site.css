@@ -237,3 +237,8 @@ code{
   color: var(--muted);
 }
 
+/* Mentoring student names */
+.mentoring-list li strong{
+  color: var(--accent);
+}
+
