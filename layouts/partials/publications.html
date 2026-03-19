@@ -43,7 +43,17 @@
         </div>
 
         {{ if $p.authors }}
-          <div class="pub-authors">{{ delimit $p.authors ", " }}</div>
+          <div class="pub-authors">
+            {{- range $i, $author := $p.authors -}}
+              {{- if gt $i 0 }}, {{ end -}}
+              {{- $parts := split $author ", " -}}
+              {{- if eq (len $parts) 2 -}}
+                {{- index $parts 1 }} {{ index $parts 0 -}}
+              {{- else -}}
+                {{- $author -}}
+              {{- end -}}
+            {{- end -}}
+          </div>
         {{ end }}
 
         <div class="pub-venue">
