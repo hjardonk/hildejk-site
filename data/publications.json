@@ -1,5 +1,54 @@
 [
   {
+    "id": "borsotti_slow-fast_2026",
+    "type": "misc",
+    "title": "Slow-fast dynamics in a planar parasite--host model with an extinction singularity",
+    "authors": [
+      "Borsotti, Jacopo",
+      "Jardón-Kojakhmetov, Hildeberto",
+      "Sensi, Mattia"
+    ],
+    "journal": "",
+    "booktitle": "",
+    "year": 2026,
+    "publisher": "arXiv",
+    "volume": "",
+    "number": "",
+    "pages": "",
+    "doi": "10.48550/arXiv.2602.19257",
+    "url": "http://arxiv.org/abs/2602.19257",
+    "eprint": "",
+    "archiveprefix": "",
+    "primaryclass": "",
+    "note": "arXiv:2602.19257 [math]",
+    "category": "preprint"
+  },
+  {
+    "id": "yanchuk_singular_2026",
+    "type": "misc",
+    "title": "Singular basins in multiscale systems: tunneling between stable states",
+    "authors": [
+      "Yanchuk, Serhiy",
+      "Wieczorek, Sebastian",
+      "Jardón-Kojakhmetov, Hildeberto",
+      "Alkhayuon, Hassan"
+    ],
+    "journal": "",
+    "booktitle": "",
+    "year": 2026,
+    "publisher": "arXiv",
+    "volume": "",
+    "number": "",
+    "pages": "",
+    "doi": "10.48550/arXiv.2601.02001",
+    "url": "http://arxiv.org/abs/2601.02001",
+    "eprint": "",
+    "archiveprefix": "",
+    "primaryclass": "",
+    "note": "arXiv:2601.02001 [math]",
+    "category": "preprint"
+  },
+  {
     "id": "albarran-garciaSingularBifurcationsSlowfast2025",
     "type": "article",
     "title": "Singular Bifurcations in a Slow-Fast Modified Leslie-Gower Model",
