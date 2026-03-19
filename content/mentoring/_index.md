@@ -10,7 +10,7 @@ For Bachelor and Master projects, I am happy to discuss topics aligned with my r
 
 ### PhD
 
-* **Ahida Ortiz Santos** (RUG-UAM, 2025-2029) (co-supervised with Martha Alvarez)
+* **Ahida Ortiz Santos** (RUG-UAM, 2025-2029) (main supervisor is Martha Alvarez)
 * **Tangwei Cao** (RUG, 2025-2029) (main supervisor is Ming Cao)
 * **Floor Schipper** (RUG, 2024-2028)
 * **Henrieke Krijgsheld** (RUG, 2024-2028)
