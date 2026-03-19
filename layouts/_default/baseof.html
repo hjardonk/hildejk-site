@@ -14,7 +14,7 @@
       {{ if .IsHome }}
         <h1>{{ site.Title }}</h1>
         <div class="meta">{{ site.Params.tagline }}</div>
-        <div class="meta">{{ site.Params.affiliation }}</div>
+        <div class="meta">{{ site.Params.affiliation }}{{ if site.Params.scholar }} · <a href="{{ site.Params.scholar }}">Google Scholar</a>{{ end }}</div>
       {{ else }}
         <h1>{{ .Title }}</h1>
       {{ end }}

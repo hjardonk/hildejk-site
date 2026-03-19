@@ -9,7 +9,7 @@ title = "Hildeberto Jardón-Kojakhmetov"
   affiliation = "University of Groningen"
   email = "h.jardon.kojakhmetov@rug.nl"
   github = ""
-  scholar = ""
+  scholar = "https://scholar.google.com/citations?user=g48MzEYAAAAJ&hl=en&oi=ao"
 
 [markup]
   [markup.goldmark]
