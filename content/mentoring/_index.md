@@ -14,7 +14,7 @@ For Bachelor and Master projects, I am happy to discuss topics aligned with my r
 * **Tangwei Cao** (RUG, 2025-2029) (main supervisor is Ming Cao)
 * **Floor Schipper** (RUG, 2024-2028)
 * **Henrieke Krijgsheld** (RUG, 2024-2028)
-* **Shaoxuan Cui** (RUG, 2022-2026)
+* **Shaoxuan Cui** (RUG, graduated 2 March 2026)
 * **Maximilian Steinert** (TUM) (main supervisor is Christian Kuehn)
 * **Riccardo Bonetto** (RUG, graduated 8 July 2025)
 * **Luis Venegas** (RUG, graduated 17 June 2025)
