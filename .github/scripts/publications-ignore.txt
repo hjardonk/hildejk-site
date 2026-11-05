@@ -1,0 +1,6 @@
+# Papers the monthly publication check should never suggest.
+# One DOI or OpenAlex ID per line (the pull request shows each paper's ID).
+# Anything after a # is a comment.
+#
+# Example:
+# 10.1234/some.doi    # erratum, not a real paper

@@ -1,0 +1,33 @@
+# Once a month, compare the publications page with OpenAlex and, if anything
+# changed, open a pull request with the edits for you to review and merge.
+# You can also run it any time: Actions tab -> "Check publications" -> Run workflow.
+name: Check publications
+
+on:
+  schedule:
+    - cron: "0 6 1 * *"   # 06:00 UTC on the 1st of every month
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compare with OpenAlex
+        run: python3 .github/scripts/update_publications.py
+
+      - name: Open a pull request if something changed
+        if: hashFiles('pr-body.md') != ''
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: publication-updates
+          delete-branch: true
+          add-paths: publications/index.html
+          commit-message: Update publications from OpenAlex
+          title: Publication updates
+          body-path: pr-body.md
