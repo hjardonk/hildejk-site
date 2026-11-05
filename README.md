@@ -61,4 +61,4 @@ Nothing is published until you merge. If nothing changed, you hear nothing. To r
 - `CNAME`: tells GitHub Pages the domain is hildejk.xyz. Don't delete it.
 - `.github/workflows/deploy.yml`: publishes the files on every commit to `main`. You never need to touch it.
 - `.github/workflows/update-publications.yml`: the monthly publication check described above.
-- `favicon.svg`: the browser-tab icon (a canard cycle with head on a cubic critical manifold).
+- `favicon.svg`, `favicon-32.png`, `apple-touch-icon.png`: the browser-tab icon (a canard cycle with head on a cubic critical manifold). The PNGs are for Safari and iPhone home screens.
