@@ -1,0 +1,5 @@
+# Everyone, including search engines and AI crawlers, is welcome to read this site.
+User-agent: *
+Allow: /
+
+Sitemap: https://hildejk.xyz/sitemap.xml

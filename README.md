@@ -21,7 +21,7 @@ Plain HTML. No build step, nothing to install. Whatever is in this repository is
 
 ## Publications update themselves (almost)
 
-On the 1st of every month, GitHub compares the publications page with [OpenAlex](https://openalex.org) (a free publication database that finds you through your ORCID). If it finds a new paper, or a preprint that has since been published, it opens a **pull request** and GitHub emails you. Then:
+On the 1st of every month, GitHub compares the publications page with [OpenAlex](https://openalex.org) (a free publication database that finds you through your ORCID). If it finds a new paper, a preprint that has since been published, or a free PDF for a paper that has none, it opens a **pull request** and GitHub emails you. Then:
 
 1. Open the pull request and look at **Files changed**.
 2. If it looks right, click **Merge pull request**. The site updates a minute later.
@@ -31,7 +31,20 @@ Nothing is published until you merge. If nothing changed, you hear nothing. To r
 
 - **A paper that should never be listed** (an erratum, a duplicate): add its ID, shown in the pull request, to `.github/scripts/publications-ignore.txt`.
 - **GitHub pauses monthly jobs after 60 days with no commits.** It emails you first. If that happens, go to **Actions** → **Check publications** → **Enable workflow**. Any commit, including merging one of these pull requests, also keeps it running.
-- The script is `.github/scripts/update_publications.py`. It only adds papers and moves preprints; it never deletes anything else.
+- **PDF links** go to arXiv first, otherwise to a repository copy. A link is only added if it really downloads a PDF (publisher sites that show logins or bot checks are skipped). To keep a paper without one, delete its link and put `<!-- no pdf -->` inside its `<li>`.
+- The script is `.github/scripts/update_publications.py`. It only adds papers, moves preprints and adds PDF links; it never deletes anything else.
+
+## Findability (search engines and AI)
+
+These files help Google, Scholar-like tools and AI assistants find and describe you correctly. They rarely need changes.
+
+- `sitemap.xml`: the list of pages. Add a line if you create a new page.
+- `robots.txt`: allows all crawlers and points to the sitemap.
+- `llms.txt`: a plain-text summary of you and your research for AI tools. Update it if your position or research themes change.
+- In `index.html`, the `application/ld+json` block describes you (name, position, ORCID, topics) in a format search engines read.
+- Each page's `og:` tags control the preview card when someone shares a link. The `description` line on each page is also what Google shows under the link.
+
+Optional: add the site to [Google Search Console](https://search.google.com/search-console) to see which searches bring people here, and submit `https://hildejk.xyz/sitemap.xml` there.
 
 ## Common tasks
 

@@ -8,12 +8,14 @@ workflow then opens a pull request for you to review. Nothing is published
 until you merge that pull request.
 
 It only ever:
-  * adds papers that are not on the page yet, and
-  * moves a preprint to the right section once it has been published.
+  * adds papers that are not on the page yet,
+  * moves a preprint to the right section once it has been published, and
+  * adds a free "PDF" link (open-access or arXiv version) to papers without one.
 It never deletes or rewrites anything else.
 
 Papers you don't want listed: add their DOI (or OpenAlex ID) to
 .github/scripts/publications-ignore.txt.
+A paper that should never get a PDF link: put <!-- no pdf --> inside its <li>.
 
 Standard library only; run locally with:  python3 .github/scripts/update_publications.py
 """
@@ -187,6 +189,52 @@ def work_link(w):
     return w.get("doi") or url
 
 
+def free_pdf(w):
+    """Most reliable free full text: arXiv, then a repository copy, then the publisher.
+
+    Publisher "free PDF" links often sit behind bot checks or expire, so they come last.
+    """
+    if w["id"] in _pdf_cache:
+        return _pdf_cache[w["id"]]
+    ax = sorted(i[6:] for i in work_ids(w) if i.startswith("arxiv:"))
+    found = f"https://arxiv.org/pdf/{ax[-1]}" if ax else None
+    if not found:
+        locs = [l for l in [w.get("best_oa_location")] + (w.get("locations") or []) if l]
+        repo = [l for l in locs if (l.get("source") or {}).get("type") == "repository"]
+        for loc in repo + [l for l in locs if l not in repo]:
+            if loc.get("is_oa") and loc.get("pdf_url") and is_real_pdf(loc["pdf_url"]):
+                found = loc["pdf_url"]
+                break
+    _pdf_cache[w["id"]] = found
+    return found
+
+
+_pdf_cache = {}
+
+
+def is_real_pdf(url):
+    """True only if the link downloads a PDF for a machine, not a login page or bot check."""
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (hildejk.xyz link check)"})
+        with urllib.request.urlopen(req, timeout=30) as r:
+            return r.read(5) == b"%PDF-"
+    except Exception:
+        return False
+
+
+def pdf_link(url):
+    return f' · <a class="pdf" href="{html.escape(url)}">PDF</a>'
+
+
+def has_pdf(li):
+    return 'class="pdf"' in li or "<!-- no pdf -->" in li
+
+
+def add_pdf(li, url):
+    return re.sub(r'(<div class="pub-venue">.*?)(</div>)',
+                  lambda m: m.group(1) + pdf_link(url) + m.group(2), li, count=1, flags=re.S)
+
+
 def render(w, section):
     authors = []
     for a in w.get("authorships") or []:
@@ -209,6 +257,9 @@ def render(w, section):
         detail = ", ".join(x for x in bits if x)
         src = html.escape((loc.get("source") or {}).get("display_name") or "", quote=False)
         venue = f"<i>{src}</i>{' ' + detail if detail else ''} ({year})"
+    pdf = free_pdf(w)
+    if pdf:
+        venue += pdf_link(pdf)
     link = work_link(w)
     title = clean_title(w.get("title") or w.get("display_name"))
     title_html = f'<a href="{html.escape(link)}">{title}</a>' if link else title
@@ -241,7 +292,7 @@ def main():
     page_items = [(key, li, ids_in(li), item_title(li)) for key, items in sections.items() for li in items]
 
     works = sorted(fetch_works(), key=lambda w: (w.get("publication_year") or 0), reverse=True)
-    added, moved, check = [], [], []
+    added, moved, check, pdfs = [], [], [], []
     handled_titles = []
 
     for w in works:
@@ -257,6 +308,8 @@ def main():
 
         if match:
             key, li, _, old_title = match
+            if li not in sections[key]:
+                continue  # already changed earlier in this run
             if key == "preprint" and section != "preprint":
                 sections["preprint"].remove(li)
                 new_li = render(w, section)
@@ -265,6 +318,10 @@ def main():
                 handled_titles.append(title)
                 if needs_check(w):
                     check.append(title)
+            elif not has_pdf(li) and free_pdf(w):
+                items = sections[key]
+                items[items.index(li)] = add_pdf(li, free_pdf(w))
+                pdfs.append(old_title)
             continue
 
         # Not on the page yet.  Only suggest preprints that are recent and on arXiv:
@@ -286,7 +343,7 @@ def main():
         if needs_check(w):
             check.append(title)
 
-    if not added and not moved:
+    if not added and not moved and not pdfs:
         print("Publications are up to date.")
         return
 
@@ -308,6 +365,10 @@ def main():
             lines.append(f"- **{html.unescape(w.get('title') or '')}** — {SECTION_NAMES[sec]}, "
                          f"{w.get('publication_year')} · ignore ID: `{(w.get('doi') or oa_id(w)).replace('https://doi.org/', '')}`")
         lines.append("")
+    if pdfs:
+        lines += ["### Free PDF links added", ""]
+        lines += [f"- {t.strip()}" for t in pdfs]
+        lines += ["", "To stop a paper from getting a PDF link, delete the link and put `<!-- no pdf -->` inside its `<li>`.", ""]
     if check:
         lines += ["### Please check these titles", "",
                   "They contain math or special characters that may not display well:", ""]

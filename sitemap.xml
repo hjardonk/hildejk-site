@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- List of pages for search engines. Add a line if you create a new page. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://hildejk.xyz/</loc></url>
+  <url><loc>https://hildejk.xyz/research/</loc></url>
+  <url><loc>https://hildejk.xyz/publications/</loc></url>
+  <url><loc>https://hildejk.xyz/teaching/</loc></url>
+  <url><loc>https://hildejk.xyz/mentoring/</loc></url>
+  <url><loc>https://hildejk.xyz/cv/</loc></url>
+  <url><loc>https://hildejk.xyz/contact/</loc></url>
+  <url><loc>https://hildejk.xyz/cv/hjk_cv.pdf</loc></url>
+</urlset>
