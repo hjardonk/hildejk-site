@@ -92,7 +92,7 @@ def fetch_works():
 # ----------------------------------------------------------------- the page
 
 SECTION_RE = re.compile(
-    r'(<h2 id="(?P<key>\w+)">.*?</h2>.*?<ul class="publications">)(?P<items>.*?)(</ul>)', re.S)
+    r'(<h2 id="(?P<key>\w+)">.*?</h2>.*?<[ou]l class="publications"[^>]*>)(?P<items>.*?)(</[ou]l>)', re.S)
 ITEM_RE = re.compile(r"<li>.*?</li>", re.S)
 
 

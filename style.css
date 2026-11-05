@@ -165,15 +165,20 @@ li { margin-bottom: 6px; }
 /* ---------- Publications ---------- */
 
 .publications {
-  list-style: none;
-  padding: 0;
+  padding: 0 0 0 2.6em;
   margin: 0 0 16px;
 }
 
 .publications li {
-  padding: 12px 0;
+  padding: 12px 0 12px 0.4em;
   border-bottom: 1px solid var(--line);
   margin: 0;
+}
+
+.publications li::marker {
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  color: var(--muted);
 }
 .publications li:last-child { border-bottom: 0; }
 
