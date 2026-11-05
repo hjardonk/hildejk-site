@@ -62,3 +62,7 @@ Nothing is published until you merge. If nothing changed, you hear nothing. To r
 - `.github/workflows/deploy.yml`: publishes the files on every commit to `main`. You never need to touch it.
 - `.github/workflows/update-publications.yml`: the monthly publication check described above.
 - `favicon.svg`, `favicon-32.png`, `apple-touch-icon.png`: the browser-tab icon (a canard cycle with head on a cubic critical manifold). The PNGs are for Safari and iPhone home screens.
+
+## Visitor statistics
+
+Visits are counted by [GoatCounter](https://hildejk.goatcounter.com): free, no cookies, so no consent banner is needed. Every page ends with one `<script data-goatcounter=…>` line; copy it into any new page you add. Clicks on the CV PDF are counted too, as "CV download", through the `data-goatcounter-click` attribute on those links. Your own visits are counted unless you turn that off in GoatCounter's settings.
