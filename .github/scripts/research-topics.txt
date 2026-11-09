@@ -1,0 +1,52 @@
+# Which papers appear under which theme on the Research page.
+# The monthly check uses this file to fill the "Papers on this topic" lists.
+#
+# Each [section] is one theme. Its options:
+#   name:            the theme's name, used in the pull request summary
+#   keywords:        looked for in a paper's title and abstract
+#   title keywords:  looked for in the title only (for words too common in abstracts)
+#   always:          papers that always belong here, one per line
+#   never:           papers that never belong here, one per line
+#
+# Keywords match the start of a word and ignore capitals and hyphens, so
+# "stabiliz" finds "stabilization" and "slow-fast" also finds "slow–fast".
+# In "always" and "never", identify a paper by its DOI or part of its title.
+#
+# A paper can appear under several themes, or under none: that is fine for
+# one-time collaborations and side projects. A paper that matches no keywords is
+# placed under a theme only if it is clearly similar to papers already there; the
+# pull request marks those as a best guess, and you can correct them here.
+# Papers listed under [no theme] at the bottom never appear on the Research page.
+
+[slow-fast]
+name: Slow-fast dynamics and critical transitions
+keywords:
+    slow-fast, fast-slow, singular perturbation, canard, critical transition,
+    time scale, timescale, multiscale, tipping, relaxation oscillation
+always:
+    10.1016/j.nonrwa.2020.103220
+
+[singularity]
+name: Bifurcation, singularity theory, and desingularization
+keywords:
+    blow-up, blowup, desingulari, singularity, singularities, non-hyperbolic,
+    nonhyperbolic, nilpotent, normal form, cusp, umbilic
+title keywords:
+    bifurcation
+
+[networks]
+name: Networked dynamical systems
+keywords:
+    network, hypergraph, graph, higher-order, consensus, chimera, synchroniz, kuramoto
+
+[control]
+name: Control of multiscale and networked systems
+keywords:
+    controller, control law, feedback control, optimal control, control strategy
+title keywords:
+    control, stabiliz, port-hamiltonian, region of attraction, model reduction,
+    model order reduction
+
+[no theme]
+papers:
+    10.1016/j.aml.2017.01.005

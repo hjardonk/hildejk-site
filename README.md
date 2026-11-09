@@ -34,6 +34,17 @@ Nothing is published until you merge. If nothing changed, you hear nothing. To r
 - **PDF links** go to arXiv first, otherwise to a repository copy. A link is only added if it really downloads a PDF (publisher sites that show logins or bot checks are skipped). To keep a paper without one, delete its link and put `<!-- no pdf -->` inside its `<li>`.
 - The script is `.github/scripts/update_publications.py`. It only adds papers, moves preprints and adds PDF links; it never deletes anything else.
 
+## Papers on the Research page
+
+Each theme on the Research page has a collapsed "Papers on this topic" list. The monthly check refills these lists, and any change appears in its pull request. Don't edit a list by hand, because it gets rewritten. Change `.github/scripts/research-topics.txt` instead:
+
+- **Change what counts as a theme:** edit its `keywords`.
+- **Fix one paper:** add its DOI or part of its title under `always` or `never`.
+- **Keep a paper off the Research page entirely:** add it under `[no theme]` at the bottom of that file. Not every paper needs a theme.
+- **Add a theme:** add a section to that file, then copy the two `<!-- papers:... -->` lines into `research/index.html` with the new section's name.
+
+A paper that matches no keywords is placed under a theme only if it is clearly similar to papers already there (shared words and references). The pull request marks those as a best guess. Otherwise the paper stays off the Research page but remains on the Publications page.
+
 ## Findability (search engines and AI)
 
 These files help Google, Scholar-like tools and AI assistants find and describe you correctly. They rarely need changes.

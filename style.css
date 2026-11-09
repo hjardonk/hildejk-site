@@ -120,6 +120,22 @@ li { margin-bottom: 6px; }
   color: var(--muted);
 }
 
+/* ---------- Research page: collapsed paper lists ---------- */
+
+.related {
+  margin: -8px 0 8px;
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+.related summary { cursor: pointer; width: fit-content; }
+.related summary:hover { color: var(--text); }
+.related ul { list-style: none; padding: 0; margin: 10px 0 16px; }
+.related li { margin-bottom: 8px; line-height: 1.4; color: var(--text); }
+.related-venue { color: var(--muted); }
+.related a { color: var(--text); }
+.related a:hover { color: var(--accent); }
+
 /* ---------- Home page ---------- */
 
 .intro {

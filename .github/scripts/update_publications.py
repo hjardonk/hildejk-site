@@ -10,21 +10,26 @@ until you merge that pull request.
 It only ever:
   * adds papers that are not on the page yet,
   * moves a preprint to the right section once it has been published, and
-  * adds a free "PDF" link (open-access or arXiv version) to papers without one.
+  * adds a free "PDF" link (open-access or arXiv version) to papers without one, and
+  * refills the "Papers on this topic" lists on the Research page.
 It never deletes or rewrites anything else.
 
 Papers you don't want listed: add their DOI (or OpenAlex ID) to
 .github/scripts/publications-ignore.txt.
 A paper that should never get a PDF link: put <!-- no pdf --> inside its <li>.
+Which papers go under which research theme: .github/scripts/research-topics.txt.
 
 Standard library only; run locally with:  python3 .github/scripts/update_publications.py
 """
+import configparser
 import difflib
 import html
 import json
+import math
 import re
 import sys
 import urllib.request
+from collections import Counter
 from datetime import date
 from pathlib import Path
 
@@ -35,6 +40,13 @@ ROOT = Path(__file__).resolve().parents[2]
 PAGE = ROOT / "publications" / "index.html"
 IGNORE = Path(__file__).with_name("publications-ignore.txt")
 SUMMARY = ROOT / "pr-body.md"
+RESEARCH = ROOT / "research" / "index.html"
+TOPICS = Path(__file__).with_name("research-topics.txt")
+
+# Filling gaps on the Research page: how many similar papers vote, and the
+# similarity (0 to 1) the closest one needs before a paper gets a best-guess theme.
+NEIGHBOURS = 5
+MIN_SIMILARITY = 0.15
 
 SECTION_NAMES = {
     "journal": "Journal articles",
@@ -275,6 +287,177 @@ def needs_check(w):
     return bool(re.search(r"[$\\{}]|&lt;|mathcal|mathbb", t))
 
 
+# ----------------------------------------------------------------- Research page
+
+NO_THEME = "no theme"
+BLOCK_RE = re.compile(r"(<!-- papers:(?P<key>[\w-]+) .*?-->)(.*?)(<!-- /papers:(?P=key) -->)", re.S)
+STOPWORDS = set("""the and for with from that this are was were which have has been their its into
+    can may also than then these those such using use used via our two one new study show shows
+    between under over based model models system systems analysis approach results paper""".split())
+
+
+def squash(s):
+    """Lower case, with hyphens, dashes and punctuation turned into single spaces."""
+    return " ".join(re.sub(r"[^a-z0-9]+", " ", html.unescape(s or "").lower()).split())
+
+
+def split_list(value):
+    return [squash(x) for x in re.split(r"[,\n]", value or "") if squash(x)]
+
+
+def load_topics():
+    cp = configparser.ConfigParser(interpolation=None, delimiters=(":",), comment_prefixes=("#",))
+    cp.read(TOPICS, encoding="utf-8")
+    return {key: {
+        "name": cp[key].get("name", key).strip(),
+        "keywords": split_list(cp[key].get("keywords")),
+        "title_keywords": split_list(cp[key].get("title keywords")),
+        "always": [x.strip() for x in cp[key].get("always", "").splitlines() if x.strip()],
+        "never": [x.strip() for x in cp[key].get("never", "").splitlines() if x.strip()],
+    } for key in cp.sections() if key != NO_THEME}
+
+
+def load_no_theme():
+    cp = configparser.ConfigParser(interpolation=None, delimiters=(":",), comment_prefixes=("#",))
+    cp.read(TOPICS, encoding="utf-8")
+    return [x.strip() for x in cp.get(NO_THEME, "papers", fallback="").splitlines() if x.strip()]
+
+
+def abstract_of(w):
+    positions = sorted((i, word) for word, where in (w.get("abstract_inverted_index") or {}).items() for i in where)
+    return " ".join(word for _, word in positions)
+
+
+def paper_records(sections, works):
+    """Every paper on the publications page, with its OpenAlex data when there is a match."""
+    records = []
+    for items in sections.values():
+        for li in items:
+            ids, title = ids_in(li), item_title(li)
+            found = [w for w in works if (work_ids(w) & ids) or same_title(title, w.get("title"))]
+            title_html = re.search(r'class="pub-title">(.*?)</div>', li, re.S).group(1).strip()
+            venue_html = re.search(r'class="pub-venue">(.*?)</div>', li, re.S).group(1)
+            italic = re.search(r"<i>(.*?)</i>", venue_html, re.S)
+            venue = italic.group(1) if italic else ("arXiv" if venue_html.startswith("arXiv") else "PhD thesis")
+            records.append({
+                "title": html.unescape(title).strip(), "title_html": title_html, "venue": venue,
+                "year": item_year(li), "ids": ids,
+                "abstract": next((a for a in map(abstract_of, found) if a), ""),
+                "terms": [t.get("display_name", "") for w in found for t in (w.get("topics") or [])]
+                         + [k.get("display_name", "") for w in found for k in (w.get("keywords") or [])],
+                "refs": sorted({r for w in found for r in (w.get("referenced_works") or [])}),
+                "themes": [], "guessed": None,
+            })
+    return records
+
+
+def has_keyword(keywords, text):
+    text = " " + text
+    return any(" " + k in text for k in keywords)
+
+
+def listed(paper, entries):
+    return any(("doi:" + e.lower()) in paper["ids"] or squash(e) in squash(paper["title"]) for e in entries)
+
+
+def word_counts(paper):
+    """Weighted words of a paper. Shared references count as words too."""
+    counts = Counter()
+    for weight, text in ((3, paper["title"]), (1, paper["abstract"]), (2, " ".join(paper["terms"]))):
+        for word in squash(text).split():
+            if len(word) > 2 and word not in STOPWORDS:
+                counts[word] += weight
+    for ref in paper["refs"]:
+        counts["ref:" + ref] += 2
+    return counts
+
+
+def similarity_vectors(papers):
+    counts = [word_counts(p) for p in papers]
+    seen_in = Counter(word for c in counts for word in c)
+    vectors = []
+    for c in counts:
+        v = {w: n * math.log(1 + len(papers) / seen_in[w]) for w, n in c.items()}
+        size = math.sqrt(sum(x * x for x in v.values())) or 1
+        vectors.append({w: x / size for w, x in v.items()})
+    return vectors
+
+
+def classify(papers, topics):
+    """Keywords first; papers left without a theme borrow one from their closest neighbours."""
+    no_theme = load_no_theme()
+    for p in papers:
+        p["excluded"] = listed(p, no_theme)
+        if p["excluded"]:
+            continue
+        title, text = squash(p["title"]), squash(p["title"] + " " + p["abstract"])
+        for key, t in topics.items():
+            if listed(p, t["never"]):
+                continue
+            if listed(p, t["always"]) or has_keyword(t["keywords"], text) or has_keyword(t["title_keywords"], title):
+                p["themes"].append(key)
+
+    vectors = similarity_vectors(papers)
+    for i, p in enumerate(papers):
+        if p["themes"] or p["excluded"]:
+            continue
+        near = []
+        for j, q in enumerate(papers):
+            if q["themes"] and not q["guessed"]:
+                sim = sum(x * vectors[j].get(w, 0) for w, x in vectors[i].items())
+                near.append((sim, j))
+        near = sorted(near, reverse=True)[:NEIGHBOURS]
+        if not near or near[0][0] < MIN_SIMILARITY:
+            continue
+        votes = Counter({key: 0 for key in topics})  # ties go to the theme listed first in the settings
+        for sim, j in near:
+            if sim >= near[0][0] / 2:  # only papers about as close as the closest one get a vote
+                for key in papers[j]["themes"]:
+                    if not listed(p, topics[key]["never"]):
+                        votes[key] += sim
+        best, score = votes.most_common(1)[0]
+        if score > 0:
+            p["themes"] = [best]
+            p["guessed"] = best
+    return papers
+
+
+def render_block(papers):
+    if not papers:
+        return "\n"
+    rows = "\n".join(
+        f'    <li>{p["title_html"]} <span class="related-venue">· {p["venue"]}, {p["year"]}</span></li>' for p in papers)
+    return (f'\n<details class="related">\n  <summary>Papers on this topic ({len(papers)})</summary>\n'
+            f"  <ul>\n{rows}\n  </ul>\n</details>\n")
+
+
+def update_research(sections, works):
+    """Refill the paper lists on the Research page. Returns (theme, paper, guessed) for additions."""
+    if not TOPICS.exists() or not RESEARCH.exists():
+        return []
+    topics = load_topics()
+    papers = sorted(classify(paper_records(sections, works), topics), key=lambda p: -p["year"])
+    text = RESEARCH.read_text()
+    changes = []
+
+    def refill(m):
+        key = m.group("key")
+        if key not in topics:
+            return m.group(0)
+        members = [p for p in papers if key in p["themes"]]
+        known = re.sub(r"\s+", " ", m.group(3))
+        for p in members:
+            if re.sub(r"\s+", " ", p["title_html"]) not in known:
+                changes.append((topics[key]["name"], p["title"], p["guessed"] == key))
+        return m.group(1) + render_block(members) + m.group(4)
+
+    new_text = BLOCK_RE.sub(refill, text)
+    if new_text != text:
+        RESEARCH.write_text(new_text)
+        changes = changes or [("", "", False)]  # order, counts or removals changed
+    return changes
+
+
 # ----------------------------------------------------------------- main
 
 def main():
@@ -343,11 +526,14 @@ def main():
         if needs_check(w):
             check.append(title)
 
-    if not added and not moved and not pdfs:
+    research = update_research(sections, works)
+
+    if not added and not moved and not pdfs and not research:
         print("Publications are up to date.")
         return
 
-    write_page(text, sections)
+    if added or moved or pdfs:
+        write_page(text, sections)
 
     def oa_id(w):
         return w["id"].rsplit("/", 1)[-1]
@@ -369,6 +555,14 @@ def main():
         lines += ["### Free PDF links added", ""]
         lines += [f"- {t.strip()}" for t in pdfs]
         lines += ["", "To stop a paper from getting a PDF link, delete the link and put `<!-- no pdf -->` inside its `<li>`.", ""]
+    themed = [c for c in research if c[0]]
+    if themed:
+        lines += ["### Research page: papers added under a theme", ""]
+        lines += [f"- *{name}*: {title}" + (" **(best guess: no keyword matched)**" if guess else "")
+                  for name, title, guess in themed]
+        lines += ["", "To correct a theme, edit `always` or `never` in `.github/scripts/research-topics.txt`.", ""]
+    elif research:
+        lines += ["### Research page", "", "The paper lists were refreshed (no new papers).", ""]
     if check:
         lines += ["### Please check these titles", "",
                   "They contain math or special characters that may not display well:", ""]

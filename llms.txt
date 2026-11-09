@@ -7,12 +7,13 @@ Research themes:
 - Slow–fast dynamics and critical transitions: geometric mechanisms behind abrupt transitions, delayed loss of stability and multiscale instabilities (geometric singular perturbation theory, canards, critical transitions, multiscale bifurcations).
 - Bifurcation, singularity theory and desingularization: non-hyperbolic points in slow–fast systems as organizing centers of global dynamics, analyzed with blow-up methods (geometric desingularization, non-hyperbolic singularities).
 - Networked dynamical systems: how network structure, adaptivity and higher-order (hypergraph) interactions shape collective dynamics and the validity of reduction methods.
+- Control of multiscale and networked systems: feedback strategies that stabilize slow–fast systems at non-hyperbolic points, control of canard cycles, and control of networked, polynomial and co-evolutionary systems (stabilization, feedback control, model order reduction, port-Hamiltonian systems).
 
 Contact: h.jardon.kojakhmetov@rug.nl. Students interested in Bachelor, Master or PhD projects in these areas are welcome to get in touch.
 
 ## Pages
 
-- [Research](https://hildejk.xyz/research/): research themes and current directions
+- [Research](https://hildejk.xyz/research/): research themes, current directions, and the papers on each theme
 - [Publications](https://hildejk.xyz/publications/): journal articles, conference papers, preprints, books and thesis, with links to free PDFs where available
 - [Mentoring](https://hildejk.xyz/mentoring/): current and former PhD, Master and Bachelor students and their thesis topics
 - [Teaching](https://hildejk.xyz/teaching/): courses taught at the University of Groningen

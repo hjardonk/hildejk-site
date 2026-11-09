@@ -27,7 +27,9 @@ jobs:
         with:
           branch: publication-updates
           delete-branch: true
-          add-paths: publications/index.html
+          add-paths: |
+            publications/index.html
+            research/index.html
           commit-message: Update publications from OpenAlex
           title: Publication updates
           body-path: pr-body.md
